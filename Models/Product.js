@@ -30,7 +30,7 @@ const ProductSchema = new mongoose.Schema(
     color: {
       type: String,
         required: false,
-  },
+  }},
    {timestamps: true} //date created and updated at}
 );
 
