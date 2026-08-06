@@ -4,6 +4,10 @@ const user = require('../Models/user');
 
 exports.createUser = async (req,res) =>{
     try{
+        const {name,email,password,PhoneNumber,gender,HasAdminAcess,role} = req.body;
+
+
+
         //check all fields are provided
 
         if(!req.name || !req.description || !req.price || !req.quantity || !req.size || !req.color){
@@ -12,7 +16,7 @@ exports.createUser = async (req,res) =>{
         //check for email
         const emailExists = await User.findOne({email: req.body.email});
         if(emailExists){
-            return res.status(400).json({message: 'this email exists'});
+            return res.status(400).json({message: 'this Email exists'});
         }
 
         //checks for Phone number 
@@ -21,10 +25,16 @@ exports.createUser = async (req,res) =>{
             return res.status(400).json({message: 'Phone number has been used'});
         }
 
-        const {name,email,password,PhoneNumber,gender,HasAdminAcess,role} = req.body;
-
+        const salt =await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash(req.body.password,salt);
         const user = new User({
-            name,email,password,PhoneNumber,gender,HasAdminAcess,role
+            name: req.body.name,
+            email: req.body.email,
+            password: passwordHash,
+            PhoneNumber: req.body.PhoneNumber,
+            gender: req.body.gender,
+            HasAdminAcess: req.body.HasAdminAcess,
+            role: req.body.role || 'user' //default role is user
         });
         await user.save();
         res.status(201).json(user);
