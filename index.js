@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const connectDB = require('./Config/databaseConfig');
 const productRoutes = require('./Routes/ProductRoutes');
+const userRoutes = require('./Routes/UserRoutes.js')
 const productController = require('./Controllers/ProductController.js');
  // Load environment variables from .env file   
 
@@ -14,6 +15,7 @@ app.use(express.json());
 // Routes
 
 app.use('/products', productRoutes);
+app.use('/users', userRoutes);
 
 
 //port 
