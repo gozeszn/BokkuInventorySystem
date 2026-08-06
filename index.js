@@ -17,7 +17,7 @@ app.use('/products', productRoutes);
 
 
 //port 
-const Port = 5000;
-app.listen(process.env.PORT || Port, () => {
-    console.log(`Server is running on port ${Port}`);
+const port = 5000;
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
 });

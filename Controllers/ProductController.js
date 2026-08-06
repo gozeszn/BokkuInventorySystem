@@ -4,6 +4,11 @@ const Product = require('../Models/Product');
 exports.createProduct = async (req,res) =>{
 
     try{   
+        if(!req.name || !req.description || !req.price || !req.quantity || !req.size || !req.color){
+            return res.status(401).json({message: 'Please return all fields'})
+        }
+
+
         const { name,description,price,quantity,size,color} = req.body;
     
         const product = new Product({
