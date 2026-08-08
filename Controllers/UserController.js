@@ -6,7 +6,7 @@ exports.createUser = async (req, res) => {
   try {
     const { name, email, password, PhoneNumber, gender, HasAdminAcess, role } =
       req.body;
-
+      console.log('request body:', req.body);
     //check all fields are provided
 
     if (!name || !email || !password || !PhoneNumber || !gender) {
@@ -20,7 +20,7 @@ exports.createUser = async (req, res) => {
 
     //checks for Phone number
     const UserPhoneNumber = await User.findOne({
-      PhoneNumber: req.body.PhoneNumber,
+      PhoneNumber: req.body.PhoneNumber
     });
     if (UserPhoneNumber) {
       return res.status(400).json({ message: "Phone number has been used" });
@@ -29,13 +29,13 @@ exports.createUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(req.body.password, salt);
     const user = new User({
-      name: req.body.name,
-      email: req.body.email,
+      name,
+      email,
       password: passwordHash,
-      PhoneNumber: req.body.PhoneNumber,
-      gender: req.body.gender,
-      HasAdminAcess: req.body.HasAdminAcess,
-      role: req.body.role || "user", //default role is user
+      PhoneNumber,
+      gender,
+      HasAdminAcess,
+      role: role || "user" //default role is user
     });
     await user.save();
     res.status(201).json(user);
@@ -63,16 +63,14 @@ exports.loginUser = async (req, res) => {
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res
-        .status(401)
-        .json({ message: "Incorrect Password. Enter Valid Password" });
+      return res.status(401).json({ message: "Incorrect Password. Enter Valid Password" });
     }
 
     //generate jwt
     const jwt = require("jsonwebtoken");
 
     const token = jwt.sign(
-      { userId: user._id ,
+      { userId: user._id , //these constitute the Payload
        email: user.email ,
        name: user.name },
       process.env.JWT_SECRET,
