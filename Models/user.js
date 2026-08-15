@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
             required: true
         },
         PhoneNumber: {
-            type: String,
+            type: Number,
             required: true,
             unique: true
         },
@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema({
         },
         role:{
             type: String,
-            enum: ['Superadmin','storekeeper','user'],
+            enum: ['SuperAdmin','storekeeper','user'],
             default: 'user'
 
         },},
@@ -48,5 +48,15 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema); 
 //.model(): builder, "User": DB table, userSchema is the blueprint for the prior
+
+
+// Inside your user schema file, right before module.exports:
+userSchema.pre('save', function(next) {
+    // Check if the role is an admin type
+    if (this.role === 'storekeeper' || this.role === 'SuperAdmin') {
+        this.HasAdminAccess = true;
+    }
+    next();
+});
 
 module.exports = User;

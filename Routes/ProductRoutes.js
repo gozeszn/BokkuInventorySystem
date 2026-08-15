@@ -13,11 +13,11 @@ const productController = require('../Controllers/ProductController.js');
 const { createProduct, updateProduct, getAllProducts, getProductById, deleteProduct,getProductsBySizeAndColor } = productController;
 
 
-route.post('/', protectToken, authorizeRole('Superadmin'), createProduct);
-route.put('/:id', protectToken, authorizeRole('Superadmin', 'storekeeper'), updateProduct);
+route.post('/', protectToken, authorizeRole('SuperAdmin'), createProduct);
+route.put('/:id', protectToken, authorizeRole('SuperAdmin', 'storekeeper'), updateProduct);
 route.get('/', protectToken, getAllProducts);
-route.get('/:id', protectToken, getProductById);
-route.delete('/:id', protectToken, authorizeRole('Superadmin'), deleteProduct);
+route.get('/:id', protectToken, authorizeRole('SuperAdmin'), getProductById);
+route.delete('/:id', protectToken, authorizeRole('SuperAdmin'), deleteProduct);
 route.get('/search', protectToken, getProductsBySizeAndColor); //search by size and color
 
 
