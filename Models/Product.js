@@ -29,11 +29,15 @@ const ProductSchema = new mongoose.Schema(
     },
     color: {
       type: String,
-        required: false,
+        required: true,
   },
   isAvailable: {
     type: Boolean,
     default: true,
+  },
+  image: {
+    type: String,
+    required: false,
   },
 },
    {timestamps: true} //date created and updated at}

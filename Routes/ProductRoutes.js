@@ -1,6 +1,7 @@
 const express = require('express');
 const Product = require('../Models/Product');
 const route = express.Router();
+const upload = require('../Middleware/upload'); // Import the upload middleware
 
 //importing the authorization middleware to check if the user has the required role to access a specific route
 const { authorizeRole } = require('../Middleware/role');
@@ -10,10 +11,13 @@ const { protectToken } = require('../Middleware/auth');
 
 //importing the controller functions
 const productController = require('../Controllers/ProductController.js');
-const { createProduct, updateProduct, getAllProducts, getProductById, deleteProduct,getProductsBySizeAndColor } = productController;
+const { createProduct, updateProduct, getAllProducts, getProductById, deleteProduct,getProductsBySizeAndColor, createProductWithImage } = productController;
 
 
-route.post('/', protectToken, authorizeRole('SuperAdmin'), createProduct);
+//('/', protectToken, authorizeRole('SuperAdmin'));
+route.post('/', protectToken, upload.single('image'), createProductWithImage);
+
+
 route.put('/:id', protectToken, authorizeRole('SuperAdmin', 'storekeeper'), updateProduct);
 route.get('/', protectToken, getAllProducts);
 route.get('/:id', protectToken, authorizeRole('SuperAdmin'), getProductById);

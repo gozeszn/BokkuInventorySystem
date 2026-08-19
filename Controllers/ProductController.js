@@ -1,4 +1,5 @@
 const Product = require('../Models/Product');
+const upload = require('../Middleware/upload');
 
 
 exports.createProduct = async (req,res) =>{
@@ -26,6 +27,56 @@ exports.createProduct = async (req,res) =>{
     }
 }
 
+
+//create a product with image upload to cloudinary
+// create a product with image upload to cloudinary
+exports.createProductWithImage = async (req, res) => {
+    try {
+        // 1. Run the multer upload first so it can parse your text fields and image file
+        upload.single('image')(req, res, async (err) => {
+            if (err) {
+                return res.status(400).json({ message: err.message });
+            }
+
+            // 2. NOW it is safe to extract fields because upload.single() has populated req.body!
+            const { name, description, price, quantity, size, color } = req.body || {};
+
+            // Check if all text fields are provided
+            if (!name || !description || !price || !quantity || !size || !color) {
+                return res.status(400).json({ message: 'Please return all fields' });
+            }
+
+            // Check if the image file was successfully uploaded to Cloudinary
+            if (!req.file) {
+                return res.status(400).json({ message: 'Please upload an image' });
+            }
+            
+            try {
+                // 3. Save your product securely to MongoDB
+                const product = new Product({
+                    name,
+                    description,
+                    price,
+                    quantity,
+                    size,
+                    color,
+                    image: req.file.path // The secure Cloudinary URL string
+                });
+
+                await product.save();
+                return res.status(201).json(product);
+
+            } catch (dbError) {
+                return res.status(500).json({ message: dbError.message });
+            }
+        }); 
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
 exports.updateProduct = async(req,res) =>{
     try{
         const {id} = req.params;
@@ -38,7 +89,7 @@ exports.updateProduct = async(req,res) =>{
         res.status(200).json(product);
     }catch(error){
         res.status(500).json({message: error.message});
-    }};
+    }};     
 
 
 exports.getAllProducts = async(req,res) =>{
