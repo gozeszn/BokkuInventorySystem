@@ -1,6 +1,6 @@
 const Product = require('../Models/Product');
 const upload = require('../Middleware/upload');
-
+const sendEmail = require('../Middleware/emailsender');
 
 exports.createProduct = async (req,res) =>{
 
@@ -22,6 +22,7 @@ exports.createProduct = async (req,res) =>{
         });
         await product.save();
         res.status(201).json(product);
+
     } catch(error){
         res.status(500).json({message: error.message});
     }
@@ -32,11 +33,7 @@ exports.createProduct = async (req,res) =>{
 // create a product with image upload to cloudinary
 exports.createProductWithImage = async (req, res) => {
     try {
-        // 1. Run the multer upload first so it can parse your text fields and image file
-        upload.single('image')(req, res, async (err) => {
-            if (err) {
-                return res.status(400).json({ message: err.message });
-            }
+    
 
             // 2. NOW it is safe to extract fields because upload.single() has populated req.body!
             const { name, description, price, quantity, size, color } = req.body || {};
@@ -66,15 +63,18 @@ exports.createProductWithImage = async (req, res) => {
                 await product.save();
                 return res.status(201).json(product);
 
+                console.log('Product created successfully:', product);
+
             } catch (dbError) {
                 return res.status(500).json({ message: dbError.message });
             }
-        }); 
+           const subject = 'New Product Created';
+            const text = `A new product has been created:\n\nName: ${name}\nDescription: ${description}\nPrice: ${price}\nQuantity: ${quantity}\nSize: ${size}\nColor: ${color}`;
+            await sendEmail('preciousonyenaucheya2004@gmail.com', subject, text);
 
-    } catch (error) {
+        }  catch (error) {
         res.status(500).json({ message: error.message });
-    }
-};
+        }};
 
 
 exports.updateProduct = async(req,res) =>{
