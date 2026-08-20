@@ -61,16 +61,17 @@ exports.createProductWithImage = async (req, res) => {
                 });
 
                 await product.save();
+                console.log('Product created successfully:', product);
+                const subject = 'New Product Created';
+                 const text = `A new product has been created:\n\nName: ${name}\nDescription: ${description}\nPrice: ${price}\nQuantity: ${quantity}\nSize: ${size}\nColor: ${color}`;
+                 await sendEmail('preciousonyenaucheya2004@gmail.com', subject, text);
+
                 return res.status(201).json(product);
 
-                console.log('Product created successfully:', product);
 
             } catch (dbError) {
                 return res.status(500).json({ message: dbError.message });
             }
-           const subject = 'New Product Created';
-            const text = `A new product has been created:\n\nName: ${name}\nDescription: ${description}\nPrice: ${price}\nQuantity: ${quantity}\nSize: ${size}\nColor: ${color}`;
-            await sendEmail('preciousonyenaucheya2004@gmail.com', subject, text);
 
         }  catch (error) {
         res.status(500).json({ message: error.message });
